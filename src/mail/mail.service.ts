@@ -1,4 +1,4 @@
-import { Global, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CONFIG_OPTIONS } from 'src/common/common.constants';
 import { EmailVar, MailModuleOptions } from './mail.interfaces';
 import got from 'got';
@@ -10,11 +10,11 @@ export class MailService {
     @Inject(CONFIG_OPTIONS) private readonly options: MailModuleOptions,
   ) {}
 
-  private async sendEmail(
+  async sendEmail(
     subject: string,
     template: string,
     emailVars: EmailVar[],
-  ) {
+  ): Promise<boolean> {
     const form = new FormData();
     form.append(
       'from',
@@ -25,7 +25,7 @@ export class MailService {
     form.append('template', template);
     emailVars.forEach((eVar) => form.append(`v:${eVar.key}`, eVar.value));
     try {
-      const response = await got(
+      const response = await got.post(
         `https://api.mailgun.net/v3/${this.options.emailDomain}/messages`,
         {
           headers: {
@@ -33,12 +33,12 @@ export class MailService {
               `api:${this.options.apiKey}`,
             ).toString('base64')}`,
           },
-          method: 'POST',
           body: form,
         },
       );
+      return true;
     } catch (error) {
-      console.log(error);
+      return false;
     }
   }
 

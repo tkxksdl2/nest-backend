@@ -31,8 +31,7 @@ export class UsersService {
     try {
       const exists = await this.users.findOne({ where: { email } });
       if (exists) {
-        //make error
-        return { ok: true, error: 'User with input email already exists.' };
+        return { ok: false, error: 'User with input email already exists.' };
       }
       const user = await this.users.save(
         this.users.create({ email, password, role }),
@@ -80,13 +79,10 @@ export class UsersService {
 
   async findById(id: number): Promise<UserProfileOutput> {
     try {
-      const user = await this.users.findOne({ where: { id } });
-      if (user) {
-        return { ok: true, user };
-      }
-      return { ok: false, error: 'User not Found' };
+      const user = await this.users.findOneOrFail({ where: { id } });
+      return { ok: true, user };
     } catch (error) {
-      return { ok: false, error };
+      return { ok: false, error: 'User not Found' };
     }
   }
 
