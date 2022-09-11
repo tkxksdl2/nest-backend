@@ -71,7 +71,7 @@ describe('UserService', () => {
     const createAccountArgs = {
       email: 'test@mail.com',
       password: 'pass',
-      role: 0,
+      role: 'Onwer',
     };
     it('should fail if user exists', async () => {
       usersRepository.findOne.mockResolvedValue({

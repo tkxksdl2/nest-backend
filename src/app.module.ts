@@ -14,13 +14,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
-import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
+import { Category } from './restaurants/entities/category.entity';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
@@ -55,7 +56,7 @@ import { MailModule } from './mail/mail.module';
       synchronize: process.env.NODE_ENV !== 'prod',
       logging:
         process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
-      entities: [User, Verification],
+      entities: [User, Verification, Restaurant, Category],
     }),
     JwtModule.forRoot({ privateKey: process.env.PRIVATE_KEY }),
     MailModule.forRoot({
@@ -64,6 +65,8 @@ import { MailModule } from './mail/mail.module';
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
     UsersModule,
+    AuthModule,
+    RestaurantsModule,
     AuthModule,
   ],
   controllers: [],
