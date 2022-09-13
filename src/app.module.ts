@@ -4,7 +4,7 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloDriver } from '@nestjs/apollo';
 import { join } from 'path';
 import * as Joi from 'joi';
 
@@ -21,7 +21,10 @@ import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
 import { Category } from './restaurants/entities/category.entity';
-import { DataSource } from 'typeorm';
+import { Dish } from './restaurants/entities/dish.entity';
+import { OrdersModule } from './orders/orders.module';
+import { Order } from './orders/entities/order.entity';
+import { OrderItem } from './orders/entities/order-item.entity';
 
 @Module({
   imports: [
@@ -56,7 +59,15 @@ import { DataSource } from 'typeorm';
       synchronize: process.env.NODE_ENV !== 'prod',
       logging:
         process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
-      entities: [User, Verification, Restaurant, Category],
+      entities: [
+        User,
+        Verification,
+        Restaurant,
+        Category,
+        Dish,
+        Order,
+        OrderItem,
+      ],
     }),
     JwtModule.forRoot({ privateKey: process.env.PRIVATE_KEY }),
     MailModule.forRoot({
@@ -68,6 +79,7 @@ import { DataSource } from 'typeorm';
     AuthModule,
     RestaurantsModule,
     AuthModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],
