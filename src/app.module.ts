@@ -45,6 +45,7 @@ import { OrderItem } from './orders/entities/order-item.entity';
       }),
     }),
     GraphQLModule.forRoot({
+      playground: process.env.NODE_ENV !== 'prod',
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       driver: ApolloDriver,
       context: ({ req }) => ({ user: req['user'] }),
