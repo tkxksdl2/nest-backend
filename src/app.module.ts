@@ -26,9 +26,13 @@ import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/entities/order.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
 import { CommonModule } from './common/common.module';
+import { PaymentsModule } from './payments/payments.module';
+import { Payment } from './payments/entities/payments.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
@@ -85,6 +89,7 @@ import { CommonModule } from './common/common.module';
         Dish,
         Order,
         OrderItem,
+        Payment,
       ],
     }),
     JwtModule.forRoot({ privateKey: process.env.PRIVATE_KEY }),
@@ -99,6 +104,7 @@ import { CommonModule } from './common/common.module';
     AuthModule,
     OrdersModule,
     CommonModule,
+    PaymentsModule,
   ],
   controllers: [],
   providers: [],
