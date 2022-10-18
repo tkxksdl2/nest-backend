@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { distinctUntilChanged } from 'rxjs';
+import { PAGINATION_UNIT } from 'src/common/common.constants';
 import { User } from 'src/users/entities/user.entity';
 import { ILike, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
@@ -30,8 +30,6 @@ import { Category } from './entities/category.entity';
 import { Dish } from './entities/dish.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
-
-const PAGINATION_UNIT = 5;
 
 @Injectable()
 export class RestaurantService {
@@ -143,6 +141,7 @@ export class RestaurantService {
   async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
     try {
       const [restaurants, totalResult] = await this.restaurants.findAndCount({
+        relations: ['category'],
         take: PAGINATION_UNIT,
         skip: (page - 1) * PAGINATION_UNIT,
         order: {
