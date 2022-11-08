@@ -20,6 +20,7 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
+import { MyRestaurantsOutput } from './dtos/my-restaurant.dto';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 import {
@@ -156,6 +157,30 @@ export class RestaurantService {
       };
     } catch {
       return { ok: false, error: 'Could not load Restaurants' };
+    }
+  }
+
+  async myRestaurants(owner: User): Promise<MyRestaurantsOutput> {
+    try {
+      const restaurants = await this.restaurants.find({
+        where: {
+          owner: {
+            id: owner.id,
+          },
+        },
+      });
+      if (!restaurants) {
+        return {
+          ok: false,
+          error: 'Restaurants not found',
+        };
+      }
+      return { ok: true, restaurants };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not get restaurants',
+      };
     }
   }
 
