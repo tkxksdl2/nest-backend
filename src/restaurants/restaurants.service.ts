@@ -20,7 +20,12 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
-import { MyRestaurantsOutput } from './dtos/my-restaurant.dto';
+import {
+  MyRestaurantInput,
+  MyRestaurantOutput,
+  MyRestaurantsInput,
+  MyRestaurantsOutput,
+} from './dtos/my-restaurant.dto';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 import {
@@ -53,7 +58,7 @@ export class RestaurantService {
         createRestaurantInput.categoryName,
       );
       await this.restaurants.save(newRestaurant);
-      return { ok: true };
+      return { ok: true, restaurantId: newRestaurant.id };
     } catch (error) {
       console.log(error);
       return {
@@ -160,22 +165,47 @@ export class RestaurantService {
     }
   }
 
-  async myRestaurants(owner: User): Promise<MyRestaurantsOutput> {
+  async myRestaurant(
+    owner: User,
+    { id }: MyRestaurantInput,
+  ): Promise<MyRestaurantOutput> {
     try {
-      const restaurants = await this.restaurants.find({
+      const restaurant = await this.restaurants.findOne({
+        where: { id, owner: { id: owner.id } },
+        relations: ['menu'],
+      });
+      return {
+        restaurant,
+        ok: true,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not find restaurant',
+      };
+    }
+  }
+
+  async myRestaurants(
+    owner: User,
+    { page }: MyRestaurantsInput,
+  ): Promise<MyRestaurantsOutput> {
+    try {
+      const [restaurants, totalResult] = await this.restaurants.findAndCount({
         where: {
           owner: {
             id: owner.id,
           },
         },
+        take: PAGINATION_UNIT,
+        skip: (page - 1) * PAGINATION_UNIT,
       });
-      if (!restaurants) {
-        return {
-          ok: false,
-          error: 'Restaurants not found',
-        };
-      }
-      return { ok: true, restaurants };
+      return {
+        ok: true,
+        restaurants,
+        totalPages: Math.ceil(totalResult / PAGINATION_UNIT),
+        totalResult,
+      };
     } catch {
       return {
         ok: false,
