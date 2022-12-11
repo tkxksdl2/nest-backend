@@ -55,6 +55,10 @@ import { Context } from 'apollo-server-core';
       }),
     }),
     GraphQLModule.forRoot({
+      cors: {
+        origin: true,
+        credentials: true,
+      },
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       driver: ApolloDriver,
       subscriptions: {
@@ -83,9 +87,10 @@ import { Context } from 'apollo-server-core';
             database: process.env.DB_NAME,
           }),
 
-      synchronize: process.env.NODE_ENV !== 'prod',
+      synchronize: process.env.NODE_ENV !== 'production',
       logging:
-        process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
+        process.env.NODE_ENV !== 'production' &&
+        process.env.NODE_ENV !== 'test',
       entities: [
         User,
         Verification,
